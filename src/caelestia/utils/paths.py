@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import subprocess
 import tempfile
 from pathlib import Path
 from typing import Any
@@ -33,11 +34,28 @@ scheme_path: Path = c_state_dir / "scheme.json"
 scheme_data_dir: Path = cli_data_dir / "schemes"
 scheme_cache_dir: Path = c_cache_dir / "schemes"
 
-wallpapers_dir: Path = Path(os.getenv("CAELESTIA_WALLPAPERS_DIR", pictures_dir / "Wallpapers"))
+def _get_localized_wallpapers_dir() -> Path:
+    default_walls = pictures_dir / "Wallpapers"
+    if default_walls.exists():
+        return default_walls
+
+    try:
+        # If the default isn't there, query the localized directory
+        real_pics = Path(subprocess.check_output(["xdg-user-dir", "PICTURES"], text=True).strip())
+        localized_walls = real_pics / "Wallpapers"
+        if localized_walls.exists():
+            return localized_walls
+    except Exception:
+        pass
+    return default_walls
+
+
+wallpapers_dir: Path = Path(os.getenv("CAELESTIA_WALLPAPERS_DIR") or _get_localized_wallpapers_dir())
 wallpaper_path_path: Path = c_state_dir / "wallpaper/path.txt"
 wallpaper_link_path: Path = c_state_dir / "wallpaper/current"
 wallpaper_thumbnail_path: Path = c_state_dir / "wallpaper/thumbnail.jpg"
 wallpapers_cache_dir: Path = c_cache_dir / "wallpapers"
+thumb_queue_path: Path = c_cache_dir / "thumb_queue.json"
 
 screenshots_dir: Path = Path(os.getenv("CAELESTIA_SCREENSHOTS_DIR", pictures_dir / "Screenshots"))
 screenshots_cache_dir: Path = c_cache_dir / "screenshots"

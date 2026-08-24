@@ -1,7 +1,10 @@
+import json
+import os
 import subprocess
 from argparse import Namespace
+from pathlib import Path
 
-from caelestia.utils.paths import c_cache_dir
+from caelestia.utils.paths import c_cache_dir, c_state_dir
 
 
 class Command:
@@ -9,6 +12,25 @@ class Command:
 
     def __init__(self, args: Namespace) -> None:
         self.args = args
+
+    def _resolve_hw_decoder(self) -> str | None:
+        decoder = ""
+
+        state_file = c_state_dir / "wallpaper/ui_state.json"
+        if state_file.exists():
+            try:
+                data = json.loads(state_file.read_text(encoding="utf-8"))
+                decoder = str(data.get("hwDecoder", "")).strip()
+            except Exception:
+                pass
+
+        if not decoder or decoder.lower() == "auto":
+            return None
+
+        if decoder.lower() in ["none", "cpu", "disabled", "software"]:
+            return ","
+
+        return decoder
 
     def run(self) -> None:
         if self.args.show:
@@ -24,15 +46,28 @@ class Command:
             # Send a message
             self.message(*self.args.message)
         else:
+            # Hardware Decoder Injection
+            env = os.environ.copy()
+            hw_decoder = self._resolve_hw_decoder()
+            if hw_decoder is not None:
+                env["QT_FFMPEG_DECODING_HW_DEVICE_TYPES"] = hw_decoder
+            else:
+                env.pop("QT_FFMPEG_DECODING_HW_DEVICE_TYPES", None)
+                
             # Start the shell
             args = ["qs", "-c", "caelestia", "-n"]
             if self.args.log_rules:
                 args.extend(["--log-rules", self.args.log_rules])
             if self.args.daemon:
                 args.append("-d")
-                subprocess.run(args)
+                subprocess.run(args, env=env)
             else:
-                shell = subprocess.Popen(args, stdout=subprocess.PIPE, universal_newlines=True)
+                shell = subprocess.Popen(
+                    args,
+                    stdout=subprocess.PIPE,
+                    universal_newlines=True,
+                    env=env,
+                )
 
                 # Ensure stdout is not None for the type checker
                 if shell.stdout:
