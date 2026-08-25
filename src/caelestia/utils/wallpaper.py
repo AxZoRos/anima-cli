@@ -405,6 +405,10 @@ def run_worker_daemon() -> None:
             thumb_queue_path.unlink(missing_ok=True)
 
 
+def extract_all_video_thumbs() -> None:
+    run_worker_daemon()
+
+
 def set_wallpaper(wall: Path, no_smart: bool) -> None:
     # Make path absolute
     wall = Path(wall).resolve()
