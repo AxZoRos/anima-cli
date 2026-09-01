@@ -94,7 +94,7 @@ jobs:
                   result/bin/caelestia shell mpris list
                   result/bin/caelestia shell notifs clear
 
-                  pgrep .quickshell-wra  # Fail job if shell died
+                  pgrep -f "caelestia-shell" || pgrep -f "quickshell" || pgrep .quickshell-wra || pgrep -f "qs"  # Fail job if shell died
                   result/bin/caelestia shell -k
                   killall sway  # Screw using IPC
 

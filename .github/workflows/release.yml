@@ -1,38 +1,71 @@
 name: Create release
 
 on:
-    push:
-        tags:
-            - "v*"
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version tag (leave empty to auto-sync with upstream Caelestia CLI)"
+        required: false
+        default: ""
 
 jobs:
-    build-and-release:
-        runs-on: ubuntu-latest
+  build-and-release:
+    runs-on: ubuntu-latest
 
-        permissions:
-            contents: write
+    permissions:
+      contents: write
 
-        steps:
-            - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-            - name: Clean stale artifacts
-              run: git clean -dfx
+      - name: Setup tag version
+        id: ver
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TAG="${{ inputs.version }}"
+            if [ -z "$TAG" ]; then
+              TAG=$(curl -sL "https://api.github.com/repos/caelestia-dots/cli/releases/latest" | grep -Po '"tag_name":\s*"\K[^"]+' || echo "")
+            fi
+            if [ -z "$TAG" ]; then
+              TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            fi
+            if [ -z "$TAG" ]; then
+              TAG="v1.1.2"
+            fi
+            [[ "$TAG" != v* ]] && TAG="v$TAG"
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git tag -f -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG" --force
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
 
-            - name: Setup python
-              uses: actions/setup-python@v5
-              with:
-                  python-version: "3.x"
+      - name: Clean stale artifacts
+        run: git clean -dfx
 
-            - name: Install build
-              run: |
-                  python -m pip install --upgrade pip
-                  pip install build
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
 
-            - name: Create packages
-              run: python -m build
+      - name: Install build
+        run: |
+          python -m pip install --upgrade pip
+          pip install build
 
-            - name: Create release
-              uses: softprops/action-gh-release@v2
-              with:
-                  files: dist/*
-                  generate_release_notes: true
+      - name: Create packages
+        run: python -m build
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          files: dist/*
+          generate_release_notes: true

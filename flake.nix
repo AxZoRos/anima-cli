@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
     caelestia-shell = {
-      url = "github:caelestia-dots/shell";
+      url = "github:AxZoRos/anima-shell";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.caelestia-cli.follows = "";
     };
