@@ -9,7 +9,10 @@ class Command:
         self.args = args
 
     def run(self) -> None:
-        clip = subprocess.check_output(["cliphist", "list"])
+        try:
+            clip = subprocess.check_output(["cliphist", "list"])
+        except subprocess.CalledProcessError:
+            clip = b""
 
         if self.args.delete:
             args = ["--prompt=del > ", "--placeholder=Delete from clipboard"]
