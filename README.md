@@ -1,6 +1,6 @@
-# caelestia-cli
+# anima-cli
 
-The main control script for the Caelestia dotfiles.
+The main control script and wallpaper metadata engine for the Caelestia dotfiles and Anima Shell.
 
 <details><summary id="dependencies">External dependencies</summary>
 
@@ -17,6 +17,29 @@ The main control script for the Caelestia dotfiles.
 
 </details>
 
+## Overview
+
+Anima CLI extends the upstream Caelestia CLI with background video processing and wallpaper metadata management:
+
+- **Video Metadata Extraction**: Probes video files using `ffprobe` (with low-priority `nice`/`ionice`) to extract codec format, resolution, FPS, and bitrate.
+- **Smart Thumbnail Generation**: Generates video preview thumbnails using `ffmpeg` with black-frame detection and fallback candidate timestamps.
+- **Persistent Metadata Caching**: Caches extracted properties in `wallpaper_properties.json` for immediate loading in Anima Shell without blocking UI rendering.
+- **Thumbnail Garbage Collection**: Automatically cleans up orphaned thumbnails and stale metadata entries when video files are moved or removed.
+
+## Modified Files
+
+Overview of code modifications relative to upstream Caelestia CLI:
+
+| File | Type | Description |
+| :--- | :--- | :--- |
+| `src/caelestia/utils/wallpaper.py` | `MODIFIED` | Video metadata probing (`ffprobe`), thumbnail generation (`ffmpeg`), worker daemon, and JSON caching. |
+| `src/caelestia/utils/paths.py` | `MODIFIED` | Directory paths for video thumbnail storage (`~/.cache/caelestia/videothumbs`) and queue files. |
+| `src/caelestia/subcommands/wallpaper.py` | `MODIFIED` | Wallpaper worker daemon integration and dynamic properties sync. |
+| `src/caelestia/subcommands/shell.py` | `MODIFIED` | IPC commands and shell synchronization for live video metadata. |
+| `src/caelestia/parser.py` | `MODIFIED` | Command-line arguments and flags for thumbnail extraction. |
+
+---
+
 ## Installation
 
 ### Arch linux
@@ -27,43 +50,6 @@ like [`yay`](https://github.com/Jguer/yay) or manually downloading the PKGBUILD 
 A package following the latest commit also exists as `caelestia-cli-git`. This is bleeding edge
 and likely to be unstable/have bugs. Regular users are recommended to use the stable package
 (`caelestia-cli`).
-
-### Nix
-
-You can run the CLI directly via `nix run`:
-
-```sh
-nix run github:caelestia-dots/cli
-```
-
-Or add it to your system configuration:
-
-```nix
-{
-  inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
-    caelestia-cli = {
-      url = "github:caelestia-dots/cli";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-  };
-}
-```
-
-The package is available as `caelestia-cli.packages.<system>.default`, which can be added to your
-`environment.systemPackages`, `users.users.<username>.packages`, `home.packages` if using home-manager,
-or a devshell. The CLI can then be used via the `caelestia` command.
-
-> [!TIP]
-> The default package does not have the shell enabled by default, which is required for full functionality.
-> To enable the shell, use the `with-shell` package. This is the recommended installation method, as
-> the CLI exposes the shell via the `shell` subcommand, meaning there is no need for the shell package
-> to be exposed.
-
-For home-manager, you can also use the Caelestia's home manager module (explained in
-[configuring](https://github.com/caelestia-dots/shell?tab=readme-ov-file#home-manager-module)) that
-installs and configures the shell and the CLI.
 
 ### Manual installation
 
@@ -85,8 +71,8 @@ completions, copy the `completions/caelestia.fish` file to
 `/usr/share/fish/vendor_completions.d/caelestia.fish`.
 
 ```sh
-git clone https://github.com/caelestia-dots/cli.git
-cd cli
+git clone https://github.com/AxZoRos/anima-cli.git
+cd anima-cli
 python -m build --wheel
 sudo python -m installer dist/*.whl
 sudo cp completions/caelestia.fish /usr/share/fish/vendor_completions.d/caelestia.fish
@@ -269,3 +255,10 @@ All configuration options are in `~/.config/caelestia/cli.json`.
 ```
 
 </details>
+
+---
+
+## Credits
+
+Based on and adapted from upstream **[caelestia-dots/cli](https://github.com/caelestia-dots/cli)**.
+
