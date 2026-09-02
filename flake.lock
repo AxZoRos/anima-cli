@@ -10,11 +10,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1788226370,
-        "narHash": "sha256-Jk6ZrwAYeBYXclAemm1I//NBebawHcCA0uknBBPcixA=",
+        "lastModified": 1788276590,
+        "narHash": "sha256-nKfAdBQhR4pU7q4K7XU0p2ru7TlDyFrafYL78jDwlho=",
         "owner": "AxZoRos",
         "repo": "anima-shell",
-        "rev": "818d4f7afd7c3ef32a842713f8cd43cbbeec6e42",
+        "rev": "97f6c0ef4f5ba026f7254b43a3c1f85ba8f8b73a",
         "type": "github"
       },
       "original": {
