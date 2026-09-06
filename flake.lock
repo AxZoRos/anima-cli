@@ -10,11 +10,11 @@
         "quickshell": "quickshell"
       },
       "locked": {
-        "lastModified": 1788276590,
-        "narHash": "sha256-nKfAdBQhR4pU7q4K7XU0p2ru7TlDyFrafYL78jDwlho=",
+        "lastModified": 1788659212,
+        "narHash": "sha256-+lKlrK8ESHhGzVIjc0btLX9gt43TcWs3AQsDubWMsBE=",
         "owner": "AxZoRos",
         "repo": "anima-shell",
-        "rev": "97f6c0ef4f5ba026f7254b43a3c1f85ba8f8b73a",
+        "rev": "8efc98f01f1450aa30c4ff4ce8123cba2ab4db74",
         "type": "github"
       },
       "original": {
@@ -47,11 +47,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1788404924,
-        "narHash": "sha256-lhEhY8X5EgkQ/eg6IFz4cc8jRuSYSvnxx1al7d1dvZ0=",
+        "lastModified": 1788614874,
+        "narHash": "sha256-7QYjT2vHLuX9Z1pdxHXDKCbh1CR3D/2rywB9Tx0MPRg=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "0968519e14f7aa7d3e9b389682bd74d2b51c8ce8",
+        "rev": "c043004d1c6985732bcc1cbc5a9c9aecbbb4e0f0",
         "type": "github"
       },
       "original": {
