@@ -29,7 +29,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             TAG="${{ inputs.version }}"
             if [ -z "$TAG" ]; then
-              TAG=$(curl -sL "https://api.github.com/repos/caelestia-dots/cli/releases/latest" | grep -Po '"tag_name":\s*"\K[^"]+' || echo "")
+              TAG=$(curl -sL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/caelestia-dots/cli/releases/latest" | grep -Po '"tag_name":\s*"\K[^"]+' || echo "")
             fi
             if [ -z "$TAG" ]; then
               TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
