@@ -10,15 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Update flake inputs
-        uses: caelestia-dots/.github/actions/nix-update@main
-        with:
-          client-id: ${{ secrets.CLIENT_ID }}
-          private-key: ${{ secrets.APP_PRIVATE_KEY }}
-          package: with-shell
-
-        steps:
-            - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - name: Test graphical stuff
         env:
